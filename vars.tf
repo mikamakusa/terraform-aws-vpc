@@ -61,4 +61,113 @@ variable "vpc" {
   default = []
 }
 
-variable "tags" {}
+variable "internet_gateway" {
+  type = list(object({
+    id = any
+    vpc_id = optional(any)
+    tags = optional(map(string))
+  }))
+  default = []
+}
+
+variable "peering_connection" {
+  type = list(object({
+    id = any
+    peer_vpc_id = any
+    vpc_id = any
+    auto_accept = optional(bool)
+    peer_region = optional(string)
+    tags = optional(map(string))
+  }))
+  default = []
+}
+
+variable "route_table" {
+  type = list(object({
+    id = any
+    vpc_id = any
+    propagating_vgws = optional(list(any))
+    tags = optional(map(string))
+    route = optional(list(object({
+      carrier_gateway_id = optional(any)
+      cidr_block_id = optional(any)
+      core_network_id = optional(any)
+      destination_prefix_list_id = optional(any)
+      egress_only_gateway_id = optional(any)
+      gateway_id = optional(any)
+      ipv6_cidr_block = optional(string)
+      local_gateway_id = optional(any)
+      nat_gateway_id = optional(any)
+      network_interface_id = optional(any)
+      transit_gateway_id = optional(any)
+      vpc_endpoint_id = optional(any)
+      vpc_peering_connection_id = optional(any)
+    })), [])
+  }))
+  default = []
+}
+
+variable "egress_only" {
+  type = list(object({
+    id = any
+    vpc_id = any
+    tags = optional(map(string))
+  }))
+  default = []
+}
+
+variable "ec2_managed_prefix_list" {
+  type = list(object({
+    id = any
+    address_family = string
+    max_entries    = number
+    name           = string
+    tags = optional(map(string))
+    entry = optional(list(object({
+      cidr_block_id = any
+      description = optional(string)
+    })), [])
+  }))
+  default = []
+}
+
+variable "security_group" {
+  type = list(object({
+    id = any
+    description = optional(string)
+    name = optional(string)
+    name_prefix = optional(string)
+    revoke_rules_on_delete = optional(bool)
+    vpc_id = optional(any)
+    tags = optional(map(string))
+    ingress = optional(list(object({
+      from_port = number
+      to_port = number
+      protocol = string
+      cidr_blocks = optional(list(string))
+      description = optional(string)
+      ipv6_cidr_blocks = optional(list(string))
+      self = optional(bool)
+    })), [])
+    egress = optional(list(object({
+      from_port = number
+      to_port = number
+      cidr_blocks = optional(list(string))
+      description = optional(string)
+      ipv6_cidr_blocks = optional(list(string))
+      prefix_list_ids = optional(list(string))
+      protocol = optional(string)
+      self = optional(bool)
+    })), [])
+  }))
+}
+
+variable "tags" {
+  type = map(string)
+  default = {}
+}
+
+variable "vpc_id" {
+  type = string
+  default = null
+}
