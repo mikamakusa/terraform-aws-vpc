@@ -12,6 +12,6 @@ data "aws_vpc_peering_connection" "this" {
   vpc_id = data.aws_vpc.this.id
 }
 
-data "aws_subnet" "this" {
+data "aws_subnet" "this" {}
 
-}
+data "aws_availability_zone" "this" {}

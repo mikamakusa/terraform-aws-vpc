@@ -1,9 +1,9 @@
 output "vpc_id" {
-  value = aws_vpc.vpc.*.id
+  value = aws_vpc.this.*.id
 }
 
 output "vpc_arn" {
-  value = aws_vpc.vpc.*.arn
+  value = aws_vpc.this.*.arn
 }
 
 output "ipam_id" {
@@ -76,4 +76,31 @@ output "security_group_arn" {
 
 output "security_group_name" {
   value = try(aws_security_group.this.*.name)
+}
+
+## aws_subnet
+output "aws_subnet_id" {
+  value = try(aws_subnet.this.*.id)
+}
+
+output "aws_subnet_arn" {
+  value = try(aws_subnet.this.*.arn)
+}
+
+## aws_eip
+output "aws_eip_id" {
+  value = try(aws_eip.this.*.id)
+}
+
+output "aws_eip_arn" {
+  value = try(aws_eip.this.*.arn)
+}
+
+## aws_vpc_endpoint
+output "aws_vpc_endpoint_id" {
+  value = try(aws_vpc_endpoint.this.*.id)
+}
+
+output "aws_vpc_endpoint_arn" {
+  value = try(aws_vpc_endpoint.this.*.arn)
 }

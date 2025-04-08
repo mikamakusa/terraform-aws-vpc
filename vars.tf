@@ -224,3 +224,73 @@ variable "default_network" {
   }))
   default = []
 }
+
+variable "subnet" {
+  type = list(object({
+    id                                             = number
+    vpc_id                                         = optional(number)
+    assign_ipv6_address_on_creation                = optional(bool)
+    availability_zone                              = optional(string)
+    availability_zone_id                           = optional(string)
+    cidr_block                                     = optional(string)
+    customer_owned_ipv4_pool                       = optional(string)
+    enable_dns64                                   = optional(bool)
+    enable_lni_at_device_index                     = optional(bool)
+    enable_resource_name_dns_a_record_on_launch    = optional(bool)
+    enable_resource_name_dns_aaaa_record_on_launch = optional(bool)
+    ipv6_cidr_block                                = optional(string)
+    ipv6_native                                    = optional(bool)
+    map_customer_owned_ip_on_launch                = optional(bool)
+    map_public_ip_on_launch                        = optional(bool)
+    outpost_arn                                    = optional(string)
+    tags                                           = optional(map(string))
+  }))
+  default     = []
+  description = <<EOF
+EOF
+}
+
+variable "eip" {
+  type = list(object({
+    id                        = number
+    address                   = optional(string)
+    associate_with_private_ip = optional(string)
+    customer_owned_ipv4_pool  = optional(string)
+    domain                    = optional(string)
+    instance                  = optional(string)
+    network_border_group      = optional(string)
+    network_interface         = optional(string)
+    public_ipv4_pool          = optional(string)
+    tags                      = optional(map(string))
+  }))
+  default     = []
+  description = <<EOF
+EOF
+}
+
+variable "vpc_endpoint" {
+  type = list(object({
+    id                  = number
+    service_name        = string
+    vpc_id              = optional(number)
+    auto_accept         = optional(bool)
+    ip_address_type     = optional(string)
+    policy              = optional(string)
+    private_dns_enabled = optional(bool)
+    route_table_ids     = optional(list(number))
+    security_group_ids  = optional(list(number))
+    subnet_ids          = optional(list(number))
+    tags                = optional(map(string))
+    vpc_endpoint_type   = optional(string)
+    dns_options = optional(list(object({
+      dns_record_ip_type                             = optional(string)
+      private_dns_only_for_inbound_resolver_endpoint = optional(bool)
+    })), [])
+    subnet_configuration = optional(list(object({
+      ipv4      = optional(string)
+      ipv6      = optional(string)
+      subnet_id = optional(any)
+    })), [])
+  }))
+  default = []
+}
