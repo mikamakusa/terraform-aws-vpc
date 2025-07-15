@@ -9,7 +9,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.0.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.3.0 |
 
 ## Modules
 
@@ -39,9 +39,6 @@ No modules.
 | [aws_availability_zone.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zone) | data source |
 | [aws_default_tags.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/default_tags) | data source |
 | [aws_region.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
-| [aws_subnet.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/subnet) | data source |
-| [aws_vpc.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/vpc) | data source |
-| [aws_vpc_peering_connection.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/vpc_peering_connection) | data source |
 
 ## Inputs
 
@@ -58,39 +55,26 @@ No modules.
 | <a name="input_peering_connection"></a> [peering\_connection](#input\_peering\_connection) | n/a | <pre>list(object({<br/>    id          = any<br/>    peer_vpc_id = any<br/>    vpc_id      = any<br/>    auto_accept = optional(bool)<br/>    peer_region = optional(string)<br/>    tags        = optional(map(string))<br/>  }))</pre> | `[]` | no |
 | <a name="input_route_table"></a> [route\_table](#input\_route\_table) | n/a | <pre>list(object({<br/>    id               = any<br/>    vpc_id           = any<br/>    propagating_vgws = optional(list(any))<br/>    tags             = optional(map(string))<br/>    route = optional(list(object({<br/>      carrier_gateway_id         = optional(any)<br/>      cidr_block_id              = optional(any)<br/>      core_network_id            = optional(any)<br/>      destination_prefix_list_id = optional(any)<br/>      egress_only_gateway_id     = optional(any)<br/>      gateway_id                 = optional(any)<br/>      ipv6_cidr_block            = optional(string)<br/>      local_gateway_id           = optional(any)<br/>      nat_gateway_id             = optional(any)<br/>      network_interface_id       = optional(any)<br/>      transit_gateway_id         = optional(any)<br/>      vpc_endpoint_id            = optional(any)<br/>      vpc_peering_connection_id  = optional(any)<br/>    })), [])<br/>  }))</pre> | `[]` | no |
 | <a name="input_security_group"></a> [security\_group](#input\_security\_group) | n/a | <pre>list(object({<br/>    id                     = any<br/>    description            = optional(string)<br/>    name                   = optional(string)<br/>    name_prefix            = optional(string)<br/>    revoke_rules_on_delete = optional(bool)<br/>    vpc_id                 = optional(any)<br/>    tags                   = optional(map(string))<br/>    ingress = optional(list(object({<br/>      from_port        = number<br/>      to_port          = number<br/>      protocol         = string<br/>      cidr_blocks      = optional(list(string))<br/>      description      = optional(string)<br/>      ipv6_cidr_blocks = optional(list(string))<br/>      self             = optional(bool)<br/>    })), [])<br/>    egress = optional(list(object({<br/>      from_port        = number<br/>      to_port          = number<br/>      cidr_blocks      = optional(list(string))<br/>      description      = optional(string)<br/>      ipv6_cidr_blocks = optional(list(string))<br/>      prefix_list_ids  = optional(list(string))<br/>      protocol         = optional(string)<br/>      self             = optional(bool)<br/>    })), [])<br/>  }))</pre> | n/a | yes |
-| <a name="input_subnet"></a> [subnet](#input\_subnet) | n/a | <pre>list(object({<br/>    id                                             = number<br/>    vpc_id                                         = optional(number)<br/>    assign_ipv6_address_on_creation                = optional(bool)<br/>    availability_zone                              = optional(string)<br/>    availability_zone_id                           = optional(string)<br/>    cidr_block                                     = optional(string)<br/>    customer_owned_ipv4_pool                       = optional(string)<br/>    enable_dns64                                   = optional(bool)<br/>    enable_lni_at_device_index                     = optional(bool)<br/>    enable_resource_name_dns_a_record_on_launch    = optional(bool)<br/>    enable_resource_name_dns_aaaa_record_on_launch = optional(bool)<br/>    ipv6_cidr_block                                = optional(string)<br/>    ipv6_native                                    = optional(bool)<br/>    map_customer_owned_ip_on_launch                = optional(bool)<br/>    map_public_ip_on_launch                        = optional(bool)<br/>    outpost_arn                                    = optional(string)<br/>    tags                                           = optional(map(string))<br/>  }))</pre> | `[]` | no |
+| <a name="input_subnet"></a> [subnet](#input\_subnet) | n/a | <pre>list(object({<br/>    id                                             = number<br/>    vpc_id                                         = optional(number)<br/>    assign_ipv6_address_on_creation                = optional(bool)<br/>    availability_zone                              = optional(string)<br/>    availability_zone_id                           = optional(string)<br/>    cidr_block                                     = optional(string)<br/>    customer_owned_ipv4_pool                       = optional(string)<br/>    enable_dns64                                   = optional(bool)<br/>    enable_lni_at_device_index                     = optional(number)<br/>    enable_resource_name_dns_a_record_on_launch    = optional(bool)<br/>    enable_resource_name_dns_aaaa_record_on_launch = optional(bool)<br/>    ipv6_cidr_block                                = optional(string)<br/>    ipv6_native                                    = optional(bool)<br/>    map_customer_owned_ip_on_launch                = optional(bool)<br/>    map_public_ip_on_launch                        = optional(bool)<br/>    outpost_arn                                    = optional(string)<br/>    tags                                           = optional(map(string))<br/>  }))</pre> | `[]` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | n/a | `map(string)` | `{}` | no |
 | <a name="input_vpc"></a> [vpc](#input\_vpc) | n/a | <pre>list(object({<br/>    id                                   = any<br/>    cidr_block                           = optional(string)<br/>    instance_tenancy                     = optional(string)<br/>    ipv4_ipam_pool_id                    = optional(any)<br/>    ipv4_netmask_length                  = optional(number)<br/>    ipv6_cidr_block                      = optional(string)<br/>    ipv6_cidr_block_network_border_group = optional(string)<br/>    ipv6_ipam_pool_id                    = optional(any)<br/>    ipv6_netmask_length                  = optional(number)<br/>    enable_dns_hostnames                 = optional(bool)<br/>    enable_dns_support                   = optional(bool)<br/>    enable_network_address_usage_metrics = optional(bool)<br/>    assign_generated_ipv6_cidr_block     = optional(bool)<br/>    tags                                 = optional(map(string))<br/>  }))</pre> | `[]` | no |
-| <a name="input_vpc_endpoint"></a> [vpc\_endpoint](#input\_vpc\_endpoint) | n/a | <pre>list(object({<br/>    id                  = number<br/>    service_name        = string<br/>    vpc_id              = optional(number)<br/>    auto_accept         = optional(bool)<br/>    ip_address_type     = optional(string)<br/>    policy              = optional(string)<br/>    private_dns_enabled = optional(bool)<br/>    route_table_ids     = optional(list(number))<br/>    security_group_ids  = optional(list(number))<br/>    subnet_ids          = optional(list(number))<br/>    tags                = optional(map(string))<br/>    vpc_endpoint_type   = optional(string)<br/>    dns_options = optional(list(object({<br/>      dns_record_ip_type                             = optional(string)<br/>      private_dns_only_for_inbound_resolver_endpoint = optional(bool)<br/>    })), [])<br/>    subnet_configuration = optional(list(object({<br/>      ipv4      = optional(string)<br/>      ipv6      = optional(string)<br/>      subnet_id = optional(any)<br/>    })), [])<br/>  }))</pre> | `[]` | no |
+| <a name="input_vpc_endpoint"></a> [vpc\_endpoint](#input\_vpc\_endpoint) | n/a | <pre>list(object({<br/>    id                  = number<br/>    service_name        = string<br/>    vpc_id              = optional(number)<br/>    auto_accept         = optional(bool)<br/>    ip_address_type     = optional(string)<br/>    policy              = optional(string)<br/>    private_dns_enabled = optional(bool)<br/>    route_table_ids     = optional(number)<br/>    security_group_ids  = optional(number)<br/>    subnet_ids          = optional(number)<br/>    tags                = optional(map(string))<br/>    vpc_endpoint_type   = optional(string)<br/>    dns_options = optional(list(object({<br/>      dns_record_ip_type                             = optional(string)<br/>      private_dns_only_for_inbound_resolver_endpoint = optional(bool)<br/>    })), [])<br/>    subnet_configuration = optional(list(object({<br/>      ipv4      = optional(string)<br/>      ipv6      = optional(string)<br/>      subnet_id = optional(any)<br/>    })), [])<br/>  }))</pre> | `[]` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | n/a | `string` | `null` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_aws_eip_arn"></a> [aws\_eip\_arn](#output\_aws\_eip\_arn) | n/a |
-| <a name="output_aws_eip_id"></a> [aws\_eip\_id](#output\_aws\_eip\_id) | # aws\_eip |
-| <a name="output_aws_subnet_arn"></a> [aws\_subnet\_arn](#output\_aws\_subnet\_arn) | n/a |
-| <a name="output_aws_subnet_id"></a> [aws\_subnet\_id](#output\_aws\_subnet\_id) | # aws\_subnet |
-| <a name="output_aws_vpc_endpoint_arn"></a> [aws\_vpc\_endpoint\_arn](#output\_aws\_vpc\_endpoint\_arn) | n/a |
-| <a name="output_aws_vpc_endpoint_id"></a> [aws\_vpc\_endpoint\_id](#output\_aws\_vpc\_endpoint\_id) | # aws\_vpc\_endpoint |
-| <a name="output_ec2_managed_list_prefix_name"></a> [ec2\_managed\_list\_prefix\_name](#output\_ec2\_managed\_list\_prefix\_name) | n/a |
-| <a name="output_ec2_managed_prefix_list_arn"></a> [ec2\_managed\_prefix\_list\_arn](#output\_ec2\_managed\_prefix\_list\_arn) | n/a |
-| <a name="output_ec2_managed_prefix_list_id"></a> [ec2\_managed\_prefix\_list\_id](#output\_ec2\_managed\_prefix\_list\_id) | n/a |
-| <a name="output_egress_only_internet_gateway_id"></a> [egress\_only\_internet\_gateway\_id](#output\_egress\_only\_internet\_gateway\_id) | n/a |
-| <a name="output_internet_gateway_arn"></a> [internet\_gateway\_arn](#output\_internet\_gateway\_arn) | n/a |
-| <a name="output_internet_gateway_id"></a> [internet\_gateway\_id](#output\_internet\_gateway\_id) | n/a |
-| <a name="output_ipam_arn"></a> [ipam\_arn](#output\_ipam\_arn) | n/a |
-| <a name="output_ipam_id"></a> [ipam\_id](#output\_ipam\_id) | n/a |
-| <a name="output_ipam_pool_arn"></a> [ipam\_pool\_arn](#output\_ipam\_pool\_arn) | n/a |
-| <a name="output_ipam_pool_cidr"></a> [ipam\_pool\_cidr](#output\_ipam\_pool\_cidr) | n/a |
-| <a name="output_ipam_pool_cidr_id"></a> [ipam\_pool\_cidr\_id](#output\_ipam\_pool\_cidr\_id) | n/a |
-| <a name="output_ipam_pool_id"></a> [ipam\_pool\_id](#output\_ipam\_pool\_id) | n/a |
-| <a name="output_peering_connection_id"></a> [peering\_connection\_id](#output\_peering\_connection\_id) | n/a |
-| <a name="output_route_table_arn"></a> [route\_table\_arn](#output\_route\_table\_arn) | n/a |
-| <a name="output_route_table_id"></a> [route\_table\_id](#output\_route\_table\_id) | n/a |
-| <a name="output_security_group_arn"></a> [security\_group\_arn](#output\_security\_group\_arn) | n/a |
-| <a name="output_security_group_id"></a> [security\_group\_id](#output\_security\_group\_id) | n/a |
-| <a name="output_security_group_name"></a> [security\_group\_name](#output\_security\_group\_name) | n/a |
-| <a name="output_vpc_arn"></a> [vpc\_arn](#output\_vpc\_arn) | n/a |
-| <a name="output_vpc_id"></a> [vpc\_id](#output\_vpc\_id) | n/a |
+| <a name="output_aws_eip"></a> [aws\_eip](#output\_aws\_eip) | # aws\_eip |
+| <a name="output_aws_subnet"></a> [aws\_subnet](#output\_aws\_subnet) | n/a |
+| <a name="output_aws_vpc_endpoint"></a> [aws\_vpc\_endpoint](#output\_aws\_vpc\_endpoint) | n/a |
+| <a name="output_ec2_managed_prefix_list"></a> [ec2\_managed\_prefix\_list](#output\_ec2\_managed\_prefix\_list) | n/a |
+| <a name="output_egress_only_internet_gateway"></a> [egress\_only\_internet\_gateway](#output\_egress\_only\_internet\_gateway) | n/a |
+| <a name="output_internet_gateway"></a> [internet\_gateway](#output\_internet\_gateway) | n/a |
+| <a name="output_ipam"></a> [ipam](#output\_ipam) | Informations relatives à la ressource IPAM. |
+| <a name="output_ipam_pool"></a> [ipam\_pool](#output\_ipam\_pool) | Informations relatives au pool de la ressource IPAM. |
+| <a name="output_ipam_pool_cidr"></a> [ipam\_pool\_cidr](#output\_ipam\_pool\_cidr) | Informations relatives au CIDR du pool de la ressource IPAM. |
+| <a name="output_peering_connection"></a> [peering\_connection](#output\_peering\_connection) | n/a |
+| <a name="output_route_table"></a> [route\_table](#output\_route\_table) | n/a |
+| <a name="output_security_group"></a> [security\_group](#output\_security\_group) | n/a |
+| <a name="output_vpc"></a> [vpc](#output\_vpc) | Informations relatives au VPC. |

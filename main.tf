@@ -4,14 +4,14 @@ resource "aws_vpc_ipam" "this" {
   description        = lookup(var.ipam[count.index], "description")
   enable_private_gua = lookup(var.ipam[count.index], "enable_private_gua")
   tier               = lookup(var.ipam[count.index], "tier")
-  tags = merge(
+  tags = concat(
     var.tags,
     lookup(var.ipam[count.index], "tags"),
     data.aws_default_tags.this.tags
   )
 
   operating_regions {
-    region_name = data.aws_region.this.name
+    region_name = data.aws_region.this.region
   }
 }
 
@@ -27,11 +27,11 @@ resource "aws_vpc_ipam_pool" "this" {
   aws_service                       = lookup(var.ipam_pool[count.index], "aws_service")
   cascade                           = lookup(var.ipam_pool[count.index], "cascade")
   description                       = lookup(var.ipam_pool[count.index], "description")
-  locale                            = data.aws_region.this.name
+  locale                            = data.aws_region.this.region
   publicly_advertisable             = lookup(var.ipam_pool[count.index], "publicly_advertisable")
   public_ip_source                  = lookup(var.ipam_pool[count.index], "public_ip_source")
   source_ipam_pool_id               = element(aws_vpc_ipam.this.*.id, lookup(var.ipam_pool[count.index], "source_ipam_pool_id"))
-  tags = merge(
+  tags = concat(
     var.tags,
     lookup(var.ipam_pool[count.index], "tags"),
     data.aws_default_tags.this.tags
@@ -59,7 +59,7 @@ resource "aws_vpc" "this" {
   enable_dns_support                   = lookup(var.vpc[count.index], "enable_dns_support", false)
   enable_network_address_usage_metrics = lookup(var.vpc[count.index], "enable_network_address_usage_metrics")
   assign_generated_ipv6_cidr_block     = lookup(var.vpc[count.index], "assign_generated_ipv6_cidr_block", false)
-  tags = merge(
+  tags = concat(
     var.tags,
     lookup(var.vpc[count.index], "tags"),
     data.aws_default_tags.this.tags
@@ -69,7 +69,7 @@ resource "aws_vpc" "this" {
 resource "aws_internet_gateway" "this" {
   count  = length(var.internet_gateway)
   vpc_id = element(aws_vpc.this.*.id, lookup(var.internet_gateway[count.index], "vpc_id"))
-  tags = merge(
+  tags = concat(
     var.tags,
     lookup(var.internet_gateway[count.index], "tags"),
     data.aws_default_tags.this.tags
@@ -77,12 +77,12 @@ resource "aws_internet_gateway" "this" {
 }
 
 resource "aws_vpc_peering_connection" "this" {
-  count       = (length(var.vpc) || var.vpc_id != null) == 0 ? 0 : length(var.peering_connection)
-  peer_vpc_id = var.vpc_id ? data.aws_vpc.this.id : element(aws_vpc.this.*.id, lookup(var.peering_connection[count.index], "peer_vpc_id"))
-  vpc_id      = var.vpc_id ? data.aws_vpc.this.id : element(aws_vpc.this.*.id, lookup(var.peering_connection[count.index], "vpc_id"))
+  count       = length(var.vpc) == 0 ? 0 : length(var.peering_connection)
+  peer_vpc_id = element(aws_vpc.this.*.id, lookup(var.peering_connection[count.index], "peer_vpc_id"))
+  vpc_id      = element(aws_vpc.this.*.id, lookup(var.peering_connection[count.index], "vpc_id"))
   auto_accept = lookup(var.peering_connection[count.index], "auto_accept")
   peer_region = lookup(var.peering_connection[count.index], "peer_region")
-  tags = merge(
+  tags = concat(
     var.tags,
     lookup(var.peering_connection[count.index], "tags"),
     data.aws_default_tags.this.tags
@@ -96,9 +96,9 @@ resource "aws_vpc_peering_connection" "this" {
 }
 
 resource "aws_egress_only_internet_gateway" "this" {
-  count  = (length(var.vpc) || var.vpc_id != null) == 0 ? 0 : length(var.egress_only)
-  vpc_id = var.vpc_id ? data.aws_vpc.this.id : element(aws_vpc.this.*.id, lookup(var.egress_only[count.index], "vpc_id"))
-  tags = merge(
+  count  = length(var.vpc) == 0 ? 0 : length(var.egress_only)
+  vpc_id = element(aws_vpc.this.*.id, lookup(var.egress_only[count.index], "vpc_id"))
+  tags = concat(
     var.tags,
     lookup(var.egress_only[count.index], "tags"),
     data.aws_default_tags.this.tags
@@ -110,7 +110,7 @@ resource "aws_ec2_managed_prefix_list" "this" {
   address_family = lookup(var.ec2_managed_prefix_list[count.index], "address_family")
   max_entries    = lookup(var.ec2_managed_prefix_list[count.index], "max_entries")
   name           = lookup(var.ec2_managed_prefix_list[count.index], "name")
-  tags = merge(
+  tags = concat(
     var.tags,
     lookup(var.ec2_managed_prefix_list[count.index], "tags"),
     data.aws_default_tags.this.tags
@@ -126,10 +126,10 @@ resource "aws_ec2_managed_prefix_list" "this" {
 }
 
 resource "aws_route_table" "this" {
-  count            = (length(var.vpc) || var.vpc_id != null) == 0 ? 0 : length(var.route_table)
+  count            = length(var.vpc) == 0 ? 0 : length(var.route_table)
   vpc_id           = element(aws_vpc.this.*.id, lookup(var.route_table[count.index], "vpc_id"))
   propagating_vgws = lookup(var.route_table[count.index], "propagating_vgws")
-  tags = merge(
+  tags = concat(
     var.tags,
     lookup(var.route_table[count.index], "tags"),
     data.aws_default_tags.this.tags
@@ -150,7 +150,7 @@ resource "aws_route_table" "this" {
       // network_interface_id = ""
       // transit_gateway_id = ""
       // vpc_endpoint_id = ""
-      vpc_peering_connection_id = try(var.vpc_id != null ? data.aws_vpc_peering_connection.this.id : element(aws_vpc_peering_connection.this.*.id, lookup(route.value, "vpc_peering_connection_id")))
+      // vpc_peering_connection_id = try(var.vpc_id != null ? data.aws_vpc_peering_connection.this.id : element(aws_vpc_peering_connection.this.*.id, lookup(route.value, "vpc_peering_connection_id")))
     }
   }
 }
@@ -162,7 +162,7 @@ resource "aws_security_group" "this" {
   name_prefix            = lookup(var.security_group[count.index], "name_prefix")
   revoke_rules_on_delete = lookup(var.security_group[count.index], "revoke_rules_on_delete")
   vpc_id                 = element(aws_vpc.this.*.id, lookup(var.security_group[count.index], "vpc_id"))
-  tags = merge(
+  tags = concat(
     var.tags,
     lookup(var.security_group[count.index], "tags"),
     data.aws_default_tags.this.tags
@@ -199,7 +199,7 @@ resource "aws_security_group" "this" {
 resource "aws_default_network_acl" "this" {
   count                  = length(var.vpc) == 0 ? 0 : length(var.default_network)
   default_network_acl_id = element(aws_vpc.this.*.default_network_acl_id, lookup(var.default_network[count.index], "vpc_id"))
-  tags = merge(
+  tags = concat(
     var.tags,
     data.aws_default_tags.this.tags,
     lookup(var.default_network[count.index], "tags")
@@ -231,7 +231,7 @@ resource "aws_default_route_table" "this" {
   count                  = length(var.vpc) == 0 ? 0 : length(var.default_network)
   default_route_table_id = element(aws_vpc.this.*.default_route_table_id, lookup(var.default_network[count.index], "vpc_id"))
   propagating_vgws       = lookup(var.default_network[count.index], "propagating_vgws")
-  tags = merge(
+  tags = concat(
     var.tags,
     data.aws_default_tags.this.tags,
     lookup(var.default_network[count.index], "tags")
@@ -240,12 +240,12 @@ resource "aws_default_route_table" "this" {
   dynamic "route" {
     for_each = try(lookup(var.default_network[count.index], "route") == null ? [] : ["route"])
     content {
-      cidr_block                = lookup(route.value, "cidr_block")
-      ipv6_cidr_block           = lookup(route.value, "interface_index")
-      description               = lookup(route.value, "description")
-      destination_prefix        = lookup(route.value, "destination_prefix")
-      core_network_arn          = lookup(route.value, "core_network_arn")
-      egress_from_vpc           = lookup(route.value, "egress_from_vpc")
+      cidr_block      = lookup(route.value, "cidr_block")
+      ipv6_cidr_block = lookup(route.value, "interface_index")
+      //description               = lookup(route.value, "description")
+      //destination_prefix        = lookup(route.value, "destination_prefix")
+      core_network_arn = lookup(route.value, "core_network_arn")
+      //egress_from_vpc           = lookup(route.value, "egress_from_vpc")
       egress_only_gateway_id    = try(element(aws_egress_only_internet_gateway.this.*.id, lookup(route.value, "egress_only_gateway_id")))
       gateway_id                = try(element(aws_internet_gateway.this.*.id, lookup(route.value, "gateway_id")))
       instance_id               = lookup(route.value, "instance_id")
@@ -259,16 +259,16 @@ resource "aws_default_route_table" "this" {
 }
 
 resource "aws_default_security_group" "this" {
-  count  = length(var.vpc) == 0 ? 0 : length(var.default_network)
-  vpc_id = element(aws_vpc.this.*.default_route_table_id, lookup(var.default_network[count.index], "vpc_id"))
-  tags = merge(
+  count  = length(var.vpc) == 0 ? 0 : length(var.security_group)
+  vpc_id = element(aws_vpc.this.*.default_route_table_id, lookup(var.security_group[count.index], "vpc_id"))
+  tags = concat(
     var.tags,
     data.aws_default_tags.this.tags,
-    lookup(var.default_network[count.index], "tags")
+    lookup(var.security_group[count.index], "tags")
   )
 
   dynamic "egress" {
-    for_each = try(lookup(var.default_network[count.index], "egress") == null ? [] : ["egress"])
+    for_each = try(lookup(var.security_group[count.index], "egress") == null ? [] : ["egress"])
     content {
       cidr_blocks      = [lookup(egress.value, "default_cidr_blocks")]
       description      = lookup(egress.value, "default_cidr_block")
@@ -283,7 +283,7 @@ resource "aws_default_security_group" "this" {
   }
 
   dynamic "ingress" {
-    for_each = try(lookup(var.default_network[count.index], "ingress") == null ? [] : ["ingress"])
+    for_each = try(lookup(var.security_group[count.index], "ingress") == null ? [] : ["ingress"])
     content {
       cidr_blocks      = [lookup(ingress.value, "default_cidr_blocks")]
       description      = lookup(ingress.value, "default_cidr_block")
@@ -305,8 +305,8 @@ resource "aws_default_subnet" "this" {
 }
 
 resource "aws_subnet" "this" {
-  count                                          = (length(var.vpc) || var.vpc_id != null) == 0 ? 0 : length(var.subnet)
-  vpc_id                                         = try(var.vpc_id != null ? data.aws_vpc.this.id : element(aws_vpc.this.*.id, lookup(var.subnet[count.index], "vpc_id")))
+  count                                          = length(var.vpc) == 0 ? 0 : length(var.subnet)
+  vpc_id                                         = try(element(aws_vpc.this.*.id, lookup(var.subnet[count.index], "vpc_id")))
   assign_ipv6_address_on_creation                = lookup(var.subnet[count.index], "assign_ipv6_address_on_creation")
   availability_zone                              = lookup(var.subnet[count.index], "availability_zone")
   availability_zone_id                           = try(data.aws_availability_zone.this.id)
@@ -321,7 +321,7 @@ resource "aws_subnet" "this" {
   map_customer_owned_ip_on_launch                = lookup(var.subnet[count.index], "map_customer_owned_ip_on_launch")
   map_public_ip_on_launch                        = lookup(var.subnet[count.index], "map_public_ip_on_launch")
   outpost_arn                                    = lookup(var.subnet[count.index], "outpost_arn")
-  tags = merge(
+  tags = concat(
     data.aws_default_tags.this.tags,
     var.tags,
     lookup(var.subnet[count.index], "tags")
@@ -338,7 +338,7 @@ resource "aws_eip" "this" {
   network_border_group      = lookup(var.eip[count.index], "network_border_group")
   network_interface         = lookup(var.eip[count.index], "network_interface")
   public_ipv4_pool          = lookup(var.eip[count.index], "public_ipv4_pool")
-  tags = merge(
+  tags = concat(
     data.aws_default_tags.this.tags,
     var.tags,
     lookup(var.eip[count.index], "tags")
@@ -346,13 +346,9 @@ resource "aws_eip" "this" {
 }
 
 resource "aws_vpc_endpoint" "this" {
-  count        = (length(var.vpc) || var.vpc_id != null) == 0 ? 0 : length(var.vpc_endpoint)
-  service_name = lookup(var.vpc_endpoint[count.index], "service_name")
-  vpc_id = try(
-    var.vpc_id != null ? data.aws_vpc.this.id : element(
-      aws_vpc.this.*.id, lookup(var.vpc_endpoint[count.index], "vpc_id")
-    )
-  )
+  count               = length(var.vpc) == 0 ? 0 : length(var.vpc_endpoint)
+  service_name        = lookup(var.vpc_endpoint[count.index], "service_name")
+  vpc_id              = try(element(aws_vpc.this.*.id, lookup(var.vpc_endpoint[count.index], "vpc_id")))
   auto_accept         = lookup(var.vpc_endpoint[count.index], "auto_accept")
   ip_address_type     = lookup(var.vpc_endpoint[count.index], "ip_address_type")
   policy              = lookup(var.vpc_endpoint[count.index], "policy")
@@ -360,7 +356,7 @@ resource "aws_vpc_endpoint" "this" {
   route_table_ids     = try(element(aws_route_table.this.*.id, lookup(var.vpc_endpoint[count.index], "route_table_ids")))
   security_group_ids  = try(element(aws_security_group.this.*.id, lookup(var.vpc_endpoint[count.index], "security_group_ids")))
   subnet_ids          = try(element(aws_subnet.this.*.id, lookup(var.vpc_endpoint[count.index], "subnet_ids")))
-  tags = merge(
+  tags = concat(
     data.aws_default_tags.this.tags,
     var.tags,
     lookup(var.vpc_endpoint[count.index], "tags")
